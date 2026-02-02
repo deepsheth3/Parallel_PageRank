@@ -27,37 +27,34 @@ All implementations handle **dangling nodes** (pages with no outlinks) and apply
 ```mermaid
 graph LR
     subgraph Input
-        EDGE[Edge List<br/>from → to]
+        EDGE["Edge List: from → to"]
     end
     
-    subgraph "Data Structures"
-        PAGE[Page Structs<br/>ID, incoming_ids, out_count]
-        CSR[CSR-like Format<br/>incoming_id_starts + list]
+    subgraph Data_Structures
+        PAGE["Page Structs"]
+        CSR["CSR-like Format"]
     end
     
-    subgraph "Serial"
-        S_MAT[Dense Matrix<br/>O(n²) memory]
-        S_ITER[Matrix-Vector<br/>Multiply]
+    subgraph Serial
+        S_MAT["Dense Matrix"]
+        S_ITER["Matrix-Vector Multiply"]
     end
     
-    subgraph "MPI + OpenMP"
-        PART[Work Partitioning<br/>chunk_size = n/nproc]
-        BCAST[MPI_Bcast<br/>Distribute PR]
-        GATHER[MPI_Allgather<br/>Collect Updates]
+    subgraph MPI_OpenMP
+        PART["Work Partitioning"]
+        BCAST["MPI_Bcast"]
+        GATHER["MPI_Allgather"]
     end
     
-    subgraph "CUDA"
-        KERN[GPU Kernels<br/>256 threads/block]
-        RED[Parallel Reduction<br/>Dangling sum]
+    subgraph CUDA
+        KERN["GPU Kernels"]
+        RED["Parallel Reduction"]
     end
     
     EDGE --> PAGE --> CSR
     PAGE --> S_MAT --> S_ITER
     CSR --> PART --> BCAST --> GATHER
     CSR --> KERN --> RED
-    
-    style CUDA fill:#76B900
-    style MPI fill:#0066CC
 ```
 
 ## Run Locally
