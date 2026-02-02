@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  pagerank:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pagerank
+    volumes:
+      - ./data:/app/data:ro
+      - ./code:/app/code:ro
+    environment:
+      - NUM_ITERATIONS=${NUM_ITERATIONS:-80}
+      - NUM_THREADS=${NUM_THREADS:-4}
+    # Run serial version by default
+    command: ["./serial"]
+    
+  pagerank-mpi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pagerank-mpi
+    volumes:
+      - ./data:/app/data:ro
+    environment:
+      - NUM_ITERATIONS=${NUM_ITERATIONS:-80}
+      - NUM_THREADS=${NUM_THREADS:-4}
+    # Run MPI version with 4 processes
+    command: ["mpirun", "--allow-run-as-root", "-np", "4", "./parallel", "-f", "/app/data/graph.txt", "-n", "4", "-i", "80"]
